@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Recognition with Azure Custom Vision</title>
+    <!-- Add Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl7/1L_dstPt3HV5HzF6Gvk/e3/1m_GodiRWfYzCeren" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Image Recognition with Azure Custom Vision</h1>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*">
+            <input type="submit" value="Analyze Image" class="btn btn-primary mt-2">
+        </form>
+        <a href="{{ url_for('history') }}">View Prediction History</a>
+
+        {% if predictions %}
+        <h2 class="my-4">Prediction Results</h2>
+        <table class="table table-striped">
+            <tr>
+                <th>Tag</th>
+                <th>Confidence</th>
+                <th>Feedback</th>
+            </tr>
+            {% for prediction in predictions %}
+            {% if prediction.probability * 100 >= 0.001 %}
+            <tr>
+                <td>{{ prediction.tagName }}</td>
+                <td>{{ prediction.probability * 100 | round(2) }}%</td>
+                <td>
+                    <form method="POST" action="{{ url_for('submit_feedback') }}">
+                        <input type="hidden" name="tag" value="{{ prediction.tagName }}">
+                        <input type="hidden" name="confidence" value="{{ prediction.probability * 100 | round(2) }}">
+                        <input type="hidden" name="correct" value="1">
+                        <button type="submit" class="btn btn-success btn-sm">Correct</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('submit_feedback') }}">
+                        <input type="hidden" name="tag" value="{{ prediction.tagName }}">
+                        <input type="hidden" name="confidence" value="{{ prediction.probability * 100 | round(2) }}">
+                        <input type="hidden" name="correct" value="0">
+                        <button type="submit" class="btn btn-danger btn-sm">Incorrect</button>
+                    </form>
+                </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        </table>
+        {% endif %} <!-- Add this missing endif -->
+
+        {% if uploaded_image %}
+        <img src="{{ url_for('static', filename=uploaded_image) }}" alt="Uploaded Image" style="max-width: 100%;">
+
+        <!-- Add this form to allow users to input tags -->
+        <form action="{{ url_for('submit_tagging') }}" method="POST">
+            <input type="hidden" name="image" value="{{ uploaded_image }}">
+            <div class="form-group mt-3">
+                <label for="tag">Tag:</label>
+                <input type="text" name="tag" id="tag" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Tag</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- Add Bootstrap JavaScript and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl7/1L_dstPt3HV5HzF6Gvk/e3/1m_GodiRWfYzCeren" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBud7Lj9zBMd//z8mL/EL/7Dc5ByFcDz2czgCD3A9A/ByXK7" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+</body>
+</html>
+
