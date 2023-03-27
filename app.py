@@ -6,8 +6,8 @@ import uuid
 
 app = Flask(__name__)
 
-prediction_key = "7e1f189006ab45f7b6c2963a7c410bac"
-prediction_endpoint = "https://jazzimagerecognition-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/f2537069-771c-49af-ba08-bd623ac6d131/classify/iterations/Iterations2%20with%20car%20and%20horse/image"
+prediction_key = "XXXXXXXXXXXXXXXXXXXXXXXXXX"
+prediction_endpoint = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 
 @app.route("/", methods=["GET", "POST"])    
